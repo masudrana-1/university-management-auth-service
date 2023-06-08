@@ -1,26 +1,37 @@
-import winston from 'winston'
+import { createLogger, format, transports } from 'winston'
+const { combine, timestamp, label, printf, prettyPrint } = format
 
 // path for logger
 import path from 'path'
 
-const logger = winston.createLogger({
+// custom logger format
+const myFormat = printf(({ level, message, label, timestamp }) => {
+  const date = new Date(timestamp)
+  const hour = date.getHours()
+  const minutes = date.getMinutes()
+  const seconds = date.getSeconds()
+
+  return `${date.toDateString()} ${hour}:${minutes}:${seconds} $ [${label}] ${level}: ${message}`
+})
+
+const logger = createLogger({
   level: 'info',
-  format: winston.format.json(),
+  format: combine(label({ label: 'PH' }), timestamp(), myFormat, prettyPrint()),
   transports: [
-    new winston.transports.Console(),
-    new winston.transports.File({
+    new transports.Console(),
+    new transports.File({
       filename: path.join(process.cwd(), 'logs', 'winston', 'success.log'),
       level: 'info',
     }),
   ],
 })
 
-const errorLogger = winston.createLogger({
+const errorLogger = createLogger({
   level: 'error',
-  format: winston.format.json(),
+  format: combine(label({ label: 'PH' }), timestamp(), myFormat, prettyPrint()),
   transports: [
-    new winston.transports.Console(),
-    new winston.transports.File({
+    new transports.Console(),
+    new transports.File({
       filename: path.join(process.cwd(), 'logs', 'winston', 'error.log'),
       level: 'error',
     }),
