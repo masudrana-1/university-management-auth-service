@@ -1,6 +1,6 @@
 // auto generated incremental id
 
-import { User } from './users.model'
+import { User } from './user.model'
 
 //ekhane amra user er id auto increment korar jonno database theke last je id create hoice seta k niye ase 1++ kore increment korbo
 
