@@ -29,3 +29,14 @@ export const academicSemesterCodes: IAcademicSemesterCodes[] = [
   '02',
   '03',
 ];
+
+// ek semester er code jate onno semester a na jay se jonno validation
+export const academicSemesterTitleCodeMapper: {
+  [key: string]: string;
+} = {
+  Autumn: '01',
+  Summer: '02',
+  Fall: '03',
+};
+
+// erpor ata chole jabe service a validation er jonno
