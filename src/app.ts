@@ -16,7 +16,7 @@ app.use(express.urlencoded({ extended: true }));
 // Application route
 
 app.use('/api/v1/', routes);
-// app.use('//api/v1/', routes);
+// app.use('/api/v1/', routes);
 
 // app.use('/api/v1/users/', userRoutes);
 // app.use('/api/v1/academic-semesters', AcademicSemesterRoutes);
