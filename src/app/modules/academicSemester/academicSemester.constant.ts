@@ -40,3 +40,13 @@ export const academicSemesterTitleCodeMapper: {
 };
 
 // erpor ata chole jabe service a validation er jonno
+
+// search and filter
+export const academicSemesterSearchableField = ['title', 'code', 'year'];
+
+export const academicSemesterFilterableField = [
+  'searchTerm',
+  'title',
+  'code',
+  'year',
+];

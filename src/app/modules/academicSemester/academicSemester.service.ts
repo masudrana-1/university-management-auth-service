@@ -3,8 +3,14 @@ import ApiError from '../../../errors/ApiErrors';
 import { paginationHelpers } from '../../../helpers/paginationHelper';
 import { IGenericResponse } from '../../../interfaces/common';
 import { IPaginationOptions } from '../../../interfaces/pagination';
-import { academicSemesterTitleCodeMapper } from './academicSemester.constant';
-import { IAcademicSemester } from './academicSemester.interface';
+import {
+  academicSemesterSearchableField,
+  academicSemesterTitleCodeMapper,
+} from './academicSemester.constant';
+import {
+  IAcademicSemester,
+  IAcademicSemesterFilters,
+} from './academicSemester.interface';
 import { AcademicSemester } from './academicSemester.model';
 import httpStatus from 'http-status';
 
@@ -20,11 +26,44 @@ const createSemester = async (
   return result;
 };
 
-// pagination service
+// pagination service and search
 
 const getAllSemesters = async (
+  // search and filter
+  filters: IAcademicSemesterFilters,
+  // pagination
   paginationOptions: IPaginationOptions
 ): Promise<IGenericResponse<IAcademicSemester[]>> => {
+  // search and filter
+
+  const { searchTerm, ...filtersData } = filters;
+
+  const andConditions = [];
+  if (searchTerm) {
+    andConditions.push({
+      $or: academicSemesterSearchableField.map(field => ({
+        [field]: {
+          $regex: searchTerm,
+          $options: 'i',
+        },
+      })),
+    });
+  }
+
+  if (Object.keys(filtersData).length) {
+    andConditions.push({
+      $and: Object.entries(filtersData).map(([field, value]) => ({
+        [field]: value,
+      })),
+    });
+  }
+
+  //jokhon kono data dibo na tokhon empty object dibe
+  const whereConditions =
+    andConditions.length > 0 ? { $and: andConditions } : {};
+
+  //************************************************* */
+
   const { page, limit, skip, sortBy, sortOrder } =
     paginationHelpers.calculatePagination(paginationOptions);
 
@@ -34,7 +73,7 @@ const getAllSemesters = async (
     sortConditions[sortBy] = sortOrder;
   }
 
-  const result = await AcademicSemester.find()
+  const result = await AcademicSemester.find(whereConditions) //ekhane { $and: andConditions } ata search and filter er jonno
     .sort(sortConditions)
     .skip(skip)
     .limit(limit);
@@ -51,7 +90,17 @@ const getAllSemesters = async (
   };
 };
 
+// get single semester
+const getSingleSemester = async (
+  id: string
+): Promise<IAcademicSemester | null> => {
+  const result = await AcademicSemester.findById(id);
+
+  return result;
+};
+
 export const AcademicSemesterService = {
   createSemester,
   getAllSemesters,
+  getSingleSemester,
 };
